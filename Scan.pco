@@ -24,6 +24,9 @@
   SMC_token: 18; 
   TXT_token: 19;
   XOP_token: 20;
+  `New added tokens for lazy tabs`
+  BRC_token: 21;
+  CBR_token: 22;
   
   scan_data: void;
   
@@ -143,6 +146,7 @@
       apo_allowed: mask(apo);
       apx_allowed: mask(apo,eol);
       bkq_allowed: mask(bkq,eol);
+      col_allowed: mask(col);       `allowing colon after lbr for lazy tabs`
       dgt_allowed: mask(dgt);
       eql_allowed: mask(eql);
       exp_allowed: mask(exp);
@@ -151,6 +155,7 @@
       per_allowed: mask(per);
       quo_allowed: mask(quo);
       qux_allowed: mask(eol,quo);
+      rbr_allowed: mask(rbr);       `allowing rbr afer a colon for lazy tabs`
       sgn_allowed: mask(pls,mns);
       wsp_allowed: mask(wsp,eol);
         
@@ -196,11 +201,14 @@
       cat_fun():  
         next_ch(CAT_token);
           
+      `Added CBR ==>  :] for lazy tabs`
       col_fun():
         { skip_ch();
-          if(check(eql_allowed),
-             next_ch(CEQ_token),
-             COL_token) };
+          if(check(rbr_allowed),
+             next_ch(CBR_token),
+             if(check(eql_allowed),
+                next_ch(CEQ_token),
+                COL_token)) };
           
       com_fun():  
         next_ch(COM_token);
@@ -220,9 +228,13 @@
           
       lbc_fun():  
         next_ch(LBC_token);
-          
+         
+      `Added BRC ==>  [: for lazy tabs` 
       lbr_fun():  
-        next_ch(LBR_token);
+        { skip_ch();
+          if(check(col_allowed),
+             next_ch(BRC_token),
+             LBR_token) };
           
       lpr_fun(): 
         next_ch(LPR_token);

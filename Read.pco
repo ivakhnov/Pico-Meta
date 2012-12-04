@@ -6,8 +6,9 @@
 `*-----------------------------------*`
 { read(Str):
     { token: void;
-      begin_str: 'begin';
-      tab_str:   'tab';
+      begin_str:    'begin';
+      tab_str:      'tab';
+      lazytab_str:  'lazytab';
       msg_tab: [ 'additive operator',
                  'application',
                  'assignment',
@@ -27,7 +28,9 @@
                  'right parenthesis',
                  'semicolon',
                  'text',
-                 'exponentiation operator' ];
+                 'exponentiation operator',
+                 'left lazy bracket',
+                 'right lazy bracket' ];
                                                            
       message@any:
         error('Unexpected ', msg_tab[token]);
@@ -144,6 +147,13 @@
              APL(tab_str, next(Empty)),
              APL(tab_str, list(COM_token, RBR_token))) };
 
+      `Opening lazy brackets`
+      lazybrackets():
+        { skip();
+          if(token = CBR_token, 
+             APL(tab_str, next(Empty)),
+             APL(tab_str, list(COM_token, CBR_token))) };
+
       ref_case: case(NBR_token => number,
                      FRC_token => fraction,
                      TXT_token => text,
@@ -155,6 +165,8 @@
                      LPR_token => parentheses,
                      LBC_token => braces,
                      LBR_token => brackets,
+                     `Added token for lazy tabs`
+                     BRC_token => lazybrackets,
                           else => message);
       reference():=
         { cas: ref_case(token); 
