@@ -35,6 +35,14 @@
       print_table(Exp):
         { tab: Exp[TAB_TAB_idx];
           print_list(tab, '[', ',', ']') };
+          
+      `Added for lazy table`
+      print_lazytable(Exp):
+        { lazytab: Exp[LAZY_TAB_TAB_idx];
+          Trm: if(size(lazytab) > 0,
+          		  ', ... :]',
+          		  '... :]');
+          print_list(lazytab, '[: ', ', ', Trm) };
 
       print_function(Exp):
         { nam: Exp[FUN_NAM_idx];
@@ -89,6 +97,7 @@
                      FRC_tag => print_fraction,
                      TXT_tag => print_text,
                      TAB_tag => print_table,
+                     LAZY_TAB_tag => print_lazytable,    `Added for lazy table`
                      FUN_tag => print_function,
                      NAT_tag => print_native,
                      VAR_tag => print_variable,
