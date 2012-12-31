@@ -95,6 +95,17 @@
           idx: expression();
           if(token = RBR_token, skip(), message());
           TBL(Var, idx) };
+          
+      `Added tabulation for lazy tabs`
+      lazy_tabulation(Var):
+         { skip();
+          idx: if(token = CBR_token,
+                  { skip();
+                  	VOI() }, 
+                  { exp: expression();
+                  	skip();
+                  	exp });
+          LAZY_TBL(Var, idx) };
 
       variable(Var):
         VAR(Var);
@@ -106,6 +117,8 @@
       var_case: case(LPR_token => application,
                      LBR_token => tabulation,
                      CAT_token => apply,
+                     `Added token for lazy tabs`
+                     BRC_token => lazy_tabulation,
                           else => variable);
 
       name():
@@ -124,6 +137,8 @@
                      LPR_token => application,
                      CAT_token => apply,
                      LBR_token => tabulation,
+                     `Added token for lazy tabs`
+                     BRC_token => lazy_tabulation,
                           else => variable);
 
       operator():
@@ -151,8 +166,8 @@
       lazybrackets():
         { skip();
           if(token = CBR_token, 
-             APL(tab_str, next(Empty)),
-             APL(tab_str, list(COM_token, CBR_token))) };
+             APL(lazytab_str, next(Empty)),
+             APL(lazytab_str, list(COM_token, CBR_token))) };
 
       ref_case: case(NBR_token => number,
                      FRC_token => fraction,
