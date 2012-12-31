@@ -38,6 +38,12 @@
   TAB(Tab):
     [ TAB_tag, Tab ];
   TAB_TAB_idx: 2;
+  
+  LAZY_TAB_tag: 14;
+  LAZY_TAB(ConcreteTab, LazyExp):
+    [ LAZY_TAB_tag, ConcreteTab, LazyExp ];
+  LAZY_TAB_TAB_idx: 2;
+  LAZY_TAB_EXP_idx: 3;
 
   FUN_tag: 5;
   FUN(Nam, Par, Bod, Dct):
@@ -69,6 +75,12 @@
     [ TBL_tag, Nam, Idx ];
   TBL_NAM_idx: 2;
   TBL_IDX_idx: 3;
+  
+  LAZY_TBL_tag: 15;
+  LAZY_TBL(Nam, Idx):
+    [ LAZY_TBL_tag, Nam, Idx ];
+  LAZY_TBL_NAM_idx: 2;
+  LAZY_TBL_IDX_idx: 3;
 
   DEF_tag: 10;
   DEF(Inv, Exp):
