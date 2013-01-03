@@ -117,29 +117,41 @@
         { nam: Exp[LAZY_TBL_NAM_idx];
           exp: get(nam, DCT);
           if(exp[TAG_idx] = LAZY_TAB_tag,
-             { idx: Exp[LAZY_TBL_IDX_idx];
-               val: eval(idx);
-               if(val[TAG_idx] = NBR_tag,
-                  { nbr: val[NBR_VAL_idx];
-                    if(nbr > 0, 
-                       { tab: exp[LAZY_TAB_TAB_idx];
-                       	 lazexp: exp[LAZY_TAB_EXP_idx];
-                         if(nbr > size(tab),
-                            { xtab[(i:0)+nbr]:if(i<size(tab),
-                            							{ i:=i+1;
-                            								tab[i] },
-                            							LAZY());
-                           	xtab[nbr]:= eval(lazexp);
-                           	exp[LAZY_TAB_TAB_idx]:= xtab;
-                           	xtab[nbr] },
-                            { val: tab[nbr];
-                            	if(val[TAG_idx] = LAZY_tag,
-                            		{ tab[nbr]:= eval(lazexp);
-                            		  exp[LAZY_TAB_TAB_idx]:= tab;
-                            		  tab[nbr] },
-                            		  tab[nbr] )} )},
-                       error('non-positive index')) },
-                  error('invalid index')) },
+             { lidx: Exp[LAZY_TBL_IDX_idx];
+             	arglst: lidx[TAB_TAB_idx];
+             	if(size(arglst) = 1,
+             		{ idx: arglst[1];
+             		 	val: eval(idx);
+             		 	`DCT:= add('i', val, DCT);`
+             		 	display('waza ', val, eoln);
+		               if(val[TAG_idx] = NBR_tag,
+		                  { nbr: val[NBR_VAL_idx];
+		                    if(nbr > 0, 
+		                       { tab: exp[LAZY_TAB_TAB_idx];
+		                       	 lazexp: exp[LAZY_TAB_EXP_idx];
+		                       	 lazdct: exp[LAZY_TAB_DCT_idx];
+		                       	 lazdct:= add('i', val, lazdct);
+		                         if(nbr > size(tab),
+		                            { xtab[(i:0)+nbr]:if(i<size(tab),
+		                            							{ i:=i+1;
+		                            								tab[i] },
+		                            							LAZY());
+		                           	exp[LAZY_TAB_TAB_idx]:= xtab;
+		                           	display('lazexp  ', lazexp, eoln);
+		                           	xtab[nbr]:= call_function(lazexp, lazdct);
+		                           	display('nu      ', xtab, eoln);
+		                           	xtab[nbr] },
+		                            { val: tab[nbr];
+		                            	if(val[TAG_idx] = LAZY_tag,
+		                            		{ display('wazaaaa ', eoln);
+		                            		  exp[LAZY_TAB_TAB_idx]:= tab;
+		                            		  tab[nbr]:= call_function(lazexp, lazdct);
+		                            		  tab[nbr] },
+		                            		{ display('wazzzzz ', tab[nbr], eoln);
+		                            		  tab[nbr] } )} )},
+		                       error('non-positive index')) },
+		                  error('invalid index')) },
+             		error('only one argument expected')) },
              error('lazy table required')) };
 
       define_variable(Var, Exp):
@@ -177,20 +189,18 @@
           idx: Tbl[LAZY_TBL_IDX_idx];
           val: eval(idx);
           if(val[TAG_idx] = VOI_tag,
-          	 { exp: LAZY_TAB([], Exp);
+          	 { exp: LAZY_TAB([], Exp, DCT);
           	 	DCT:= add(nam, exp, DCT);
           	 	exp },
-	          if(val[TAG_idx] = NBR_tag,
-	             { nbr: val[NBR_VAL_idx];
-	               if(nbr < 0,
-	                  error('negative size'),
-	                  { exp: if(nbr > 0,
-	                            { tab[nbr]: eval(Exp);
-	                              LAZY_TAB(tab, Exp) },
-	                            LAZY_TAB([], Exp) );
-	                    DCT:= add(nam, exp, DCT);
-	                    exp }) },
-	             error('invalid size', val[NBR_VAL_idx]))) };
+          	 if(val[TAG_idx] = TAB_tag,
+       	 		{ concrete_args: val[TAB_TAB_idx];
+       	 		  for(i:1, i:=i+1, not(i>size(concrete_args)),
+       	 		  		concrete_args[i]:=eval(concrete_args[i]));
+       	 		  	DCT:= add(nam, Void, DCT);
+       	 		  	exp: LAZY_TAB(concrete_args, Exp, DCT);
+       	 		  	set(nam, exp, DCT);
+       	 		  	exp },
+       	 		error('invalid concrete arguments'))) };
    
       define_error(Inv, Exp):
          error('invocation required');
