@@ -104,6 +104,10 @@
   VOI_tag: 13;
   VOI():
     [ VOI_tag ];
+    
+  LAZY_tag: 16;
+  LAZY():
+  	[ LAZY_tag ];
 
   Empty:= TAB([]);
   Eoln := TXT(eoln);
