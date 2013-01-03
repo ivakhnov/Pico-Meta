@@ -112,6 +112,35 @@
                        error('non-positive index')) },
                   error('invalid index')) },
              error('table required')) };
+          
+      eval_lazy_tabulation(Exp):
+        { nam: Exp[LAZY_TBL_NAM_idx];
+          exp: get(nam, DCT);
+          if(exp[TAG_idx] = LAZY_TAB_tag,
+             { idx: Exp[LAZY_TBL_IDX_idx];
+               val: eval(idx);
+               if(val[TAG_idx] = NBR_tag,
+                  { nbr: val[NBR_VAL_idx];
+                    if(nbr > 0, 
+                       { tab: exp[LAZY_TAB_TAB_idx];
+                       	 lazexp: exp[LAZY_TAB_EXP_idx];
+                         if(nbr > size(tab),
+                            { xtab[(i:0)+nbr]:if(i<size(tab),
+                            							{ i:=i+1;
+                            								tab[i] },
+                            							LAZY());
+                           	xtab[nbr]:= eval(lazexp);
+                           	exp[LAZY_TAB_TAB_idx]:= xtab;
+                           	xtab[nbr] },
+                            { val: tab[nbr];
+                            	if(val[TAG_idx] = LAZY_tag,
+                            		{ tab[nbr]:= eval(lazexp);
+                            		  exp[LAZY_TAB_TAB_idx]:= tab;
+                            		  tab[nbr] },
+                            		  tab[nbr] )} )},
+                       error('non-positive index')) },
+                  error('invalid index')) },
+             error('lazy table required')) };
 
       define_variable(Var, Exp):
         { nam: Var[VAR_NAM_idx];
@@ -141,7 +170,27 @@
                             Empty );
                     DCT:= add(nam, exp, DCT);
                     exp }) },
-             error('invalid size')) }; 
+             error('invalid size')) };
+      
+      define_lazy_tabulation(Tbl, Exp):
+        { nam: Tbl[LAZY_TBL_NAM_idx];
+          idx: Tbl[LAZY_TBL_IDX_idx];
+          val: eval(idx);
+          if(val[TAG_idx] = VOI_tag,
+          	 { exp: LAZY_TAB([], Exp);
+          	 	DCT:= add(nam, exp, DCT);
+          	 	exp },
+	          if(val[TAG_idx] = NBR_tag,
+	             { nbr: val[NBR_VAL_idx];
+	               if(nbr < 0,
+	                  error('negative size'),
+	                  { exp: if(nbr > 0,
+	                            { tab[nbr]: eval(Exp);
+	                              LAZY_TAB(tab, Exp) },
+	                            LAZY_TAB([], Exp) );
+	                    DCT:= add(nam, exp, DCT);
+	                    exp }) },
+	             error('invalid size', val[NBR_VAL_idx]))) };
    
       define_error(Inv, Exp):
          error('invocation required');
@@ -149,6 +198,7 @@
       define_case: case(VAR_tag => define_variable,
                         APL_tag => define_application,
                         TBL_tag => define_tabulation,
+                        LAZY_TBL_tag => define_lazy_tabulation, `Added definition of lazy tabulation`
                            else => define_error);
   
       eval_definition(Exp):
@@ -210,6 +260,7 @@
       eval_case: case(VAR_tag => eval_variable,
                       APL_tag => eval_application,
                       TBL_tag => eval_tabulation,
+                      LAZY_TBL_tag => eval_lazy_tabulation,   `Added evaluation of lazy tabulation`
                       DEF_tag => eval_definition,
                       SET_tag => eval_assignment,
                          else => eval_identity);
