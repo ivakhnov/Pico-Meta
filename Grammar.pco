@@ -40,10 +40,11 @@
   TAB_TAB_idx: 2;
   
   LAZY_TAB_tag: 14;
-  LAZY_TAB(ConcreteTab, LazyExp):
-    [ LAZY_TAB_tag, ConcreteTab, LazyExp ];
+  LAZY_TAB(ConcreteTab, LazyExp, Dct):
+    [ LAZY_TAB_tag, ConcreteTab, LazyExp, Dct ];
   LAZY_TAB_TAB_idx: 2;
   LAZY_TAB_EXP_idx: 3;
+  LAZY_TAB_DCT_idx: 4;
 
   FUN_tag: 5;
   FUN(Nam, Par, Bod, Dct):
