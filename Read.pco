@@ -102,9 +102,7 @@
           idx: if(token = CBR_token,
                   { skip();
                   	VOI() }, 
-                  { exp: expression();
-                  	skip();
-                  	exp });
+                  exp: list(COM_token, CBR_token));
           LAZY_TBL(Var, idx) };
 
       variable(Var):
