@@ -158,13 +158,6 @@
              APL(tab_str, next(Empty)),
              APL(tab_str, list(COM_token, RBR_token))) };
 
-      `Opening lazy brackets`
-      lazybrackets():
-        { skip();
-          if(token = CBR_token, 
-             APL(lazytab_str, next(Empty)),
-             APL(lazytab_str, list(COM_token, CBR_token))) };
-
       ref_case: case(NBR_token => number,
                      FRC_token => fraction,
                      TXT_token => text,
@@ -176,8 +169,6 @@
                      LPR_token => parentheses,
                      LBC_token => braces,
                      LBR_token => brackets,
-                     `Added token for lazy tabs`
-                     BRC_token => lazybrackets,
                           else => message);
       reference():=
         { cas: ref_case(token); 
