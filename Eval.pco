@@ -122,8 +122,6 @@
              	if(size(arglst) = 1,
              		{ idx: arglst[1];
              		 	val: eval(idx);
-             		 	`DCT:= add('i', val, DCT);`
-             		 	display('waza ', val, eoln);
 		               if(val[TAG_idx] = NBR_tag,
 		                  { nbr: val[NBR_VAL_idx];
 		                    if(nbr > 0, 
@@ -137,18 +135,13 @@
 		                            								tab[i] },
 		                            							LAZY());
 		                           	exp[LAZY_TAB_TAB_idx]:= xtab;
-		                           	display('lazexp  ', lazexp, eoln);
 		                           	xtab[nbr]:= call_function(lazexp, lazdct);
-		                           	display('nu      ', xtab, eoln);
 		                           	xtab[nbr] },
 		                            { val: tab[nbr];
 		                            	if(val[TAG_idx] = LAZY_tag,
-		                            		{ display('wazaaaa ', eoln);
-		                            		  exp[LAZY_TAB_TAB_idx]:= tab;
-		                            		  tab[nbr]:= call_function(lazexp, lazdct);
+		                            		{ tab[nbr]:= call_function(lazexp, lazdct);
 		                            		  tab[nbr] },
-		                            		{ display('wazzzzz ', tab[nbr], eoln);
-		                            		  tab[nbr] } )} )},
+		                            		tab[nbr] )} )},
 		                       error('non-positive index')) },
 		                  error('invalid index')) },
              		error('only one argument expected')) },
@@ -248,6 +241,40 @@
                        error('non-positive index')) },
                   error('invalid index')) },
              error('table required')) };
+          
+      assign_lazy_tabulation(Tbl, Exp):
+        { nam: Tbl[LAZY_TBL_NAM_idx];
+          exp: get(nam, DCT);
+          if(exp[TAG_idx] = LAZY_TAB_tag,
+             { lidx: Tbl[LAZY_TBL_IDX_idx];
+             	`Assign new lazy expression`
+             	if(lidx[TAG_idx] = VOI_tag,
+                  { exp[LAZY_TAB_EXP_idx]:= Exp;
+		              exp[LAZY_TAB_DCT_idx]:= DCT },
+		            { arglst: lidx[TAB_TAB_idx];
+		              if(size(arglst) = 1,
+		                { idx: arglst[1];
+			       		   val: eval(idx);
+			               if(val[TAG_idx] = NBR_tag,
+			                 { nbr: val[NBR_VAL_idx];
+			                   `Assign new concrete value in lazy table`
+			                   if(nbr > 0, 
+			                      { tab: exp[LAZY_TAB_TAB_idx];
+			             	       	lazdct: exp[LAZY_TAB_DCT_idx];
+			                        if(nbr > size(tab),
+			                          { xtab[(i:0)+nbr]:if(i<size(tab),
+			                          							 { i:=i+1;
+			                          								tab[i] },
+			                            						 LAZY());
+			                            exp[LAZY_TAB_TAB_idx]:= xtab },
+			                           VOI());
+			                        tab:= exp[LAZY_TAB_TAB_idx];
+			                        tab[nbr]:= call_function(Exp, lazdct);
+			                        tab[nbr] },
+			                      error('non-positive index')) },
+		                  	error('invalid index')) },
+			             error('only one argument expected')) } )},
+             error('lazy table required')) };
    
       assign_error(Inv, Exp):
          error('invocation required');
@@ -255,6 +282,7 @@
       assign_case: case(VAR_tag => assign_variable,
                         APL_tag => assign_application,
                         TBL_tag => assign_tabulation,
+                        LAZY_TBL_tag => assign_lazy_tabulation, `Added assign of lazy tabulation`
                            else => assign_error);
   
       eval_assignment(Exp):
