@@ -98,12 +98,10 @@
           
       `Added tabulation for lazy tabs`
       lazy_tabulation(Var):
-         { skip();
-          idx: if(token = CBR_token,
-                  { skip();
-                  	VOI() }, 
-                  exp: list(COM_token, CBR_token));
-          LAZY_TBL(Var, idx) };
+        { skip();
+          if(token = CBR_token,
+             LAZY_TBL(Var, next(Void)), 
+             LAZY_TBL(Var, list(COM_token, CBR_token))) };
 
       variable(Var):
         VAR(Var);
