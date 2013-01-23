@@ -8,7 +8,6 @@
     { token: void;
       begin_str:    'begin';
       tab_str:      'tab';
-      lazytab_str:  'lazytab';
       msg_tab: [ 'additive operator',
                  'application',
                  'assignment',
