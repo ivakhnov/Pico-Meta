@@ -261,6 +261,7 @@
 			                   if(nbr > 0, 
 			                      { tab: exp[LAZY_TAB_TAB_idx];
 			             	       	lazdct: exp[LAZY_TAB_DCT_idx];
+                            lazdct:= add('i', val, lazdct);
 			                        if(nbr > size(tab),
 			                          { xtab[(i:0)+nbr]:if(i<size(tab),
 			                          							 { i:=i+1;
